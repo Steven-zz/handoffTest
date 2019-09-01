@@ -1,0 +1,6 @@
+framework module Pods_HandoffTest {
+  umbrella header "Pods-HandoffTest-umbrella.h"
+
+  export *
+  module * { export * }
+}
