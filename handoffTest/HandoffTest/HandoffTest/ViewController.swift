@@ -12,6 +12,14 @@ internal class ViewController: ASViewController<ASDisplayNode> {
     
     private let textFieldNode = ASEditableTextNode()
     private let labelNode = ASTextNode()
+    
+    private var currText: String = "" {
+        didSet {
+            if let activity = userActivity {
+                activity.needsSave = true
+            }
+        }
+    }
 
     internal init(withText text: String? = nil) {
         let rootNode = ASDisplayNode()
@@ -46,15 +54,19 @@ internal class ViewController: ASViewController<ASDisplayNode> {
     internal func startUserActivity() {
         let activity = NSUserActivity(activityType: HandoffActivity.test)
         activity.title = "Testing 123"
-        activity.userInfo = [HandoffActivity.key: "hello world"]
+        activity.userInfo = [HandoffActivity.key: currText]
         userActivity = activity
         userActivity?.becomeCurrent()
     }
     
     // 2.
     override func updateUserActivityState(_ activity: NSUserActivity) {
-        activity.addUserInfoEntries(from: [HandoffActivity.key: "updated hello world"])
+        activity.addUserInfoEntries(from: [HandoffActivity.key: currText])
         super.updateUserActivityState(activity)
+    }
+    
+    internal func setActivity(_ dad: String) {
+        textFieldNode.attributedText = NSAttributedString(string: dad)
     }
 
     
@@ -67,8 +79,10 @@ extension ViewController: ASEditableTextNodeDelegate {
     func editableTextNodeDidUpdateText(_ editableTextNode: ASEditableTextNode) {
         if let text = editableTextNode.attributedText?.string {
             labelNode.attributedText = NSAttributedString(string: text)
+            currText = text
         } else {
             labelNode.attributedText = NSAttributedString(string: "")
+            currText = ""
         }
     }
 }

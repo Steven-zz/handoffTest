@@ -53,6 +53,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
         guard let userInfo = userActivity.userInfo as NSDictionary? else { return false }
         print("Received a payload via handoff: \(userInfo)")
+        
+        if var topController = UIApplication.shared.keyWindow?.rootViewController {
+            while let presentedViewController = topController.presentedViewController {
+                topController = presentedViewController
+            }
+            if let nav = topController as? UINavigationController {
+                if let first = nav.viewControllers.first {
+                    if let hand = first as? ViewController {
+                        if let key = userInfo["handoffTestKey"] {
+                            if let dad = key as? String {
+                                hand.setActivity(dad)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        
         return true
     }
 }
